@@ -43,6 +43,7 @@ final class ConfigBasedThrottlingManager implements ThrottlingManagerInterface
             return false;
         }
 
+        !$isToCount && $requests = 0;
         $di->get('memcached')->set($requestsKey, ++$requests);
         if (1 === $requests) {
             $di->get('memcached')->set($isToCountKey, 1);
