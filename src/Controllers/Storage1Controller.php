@@ -3,73 +3,77 @@
 namespace Storage\Service\Controllers;
 
 
+use Exception;
 use MongoDB\Collection;
 use Storage\Service\Helpers\DateTimeHelper;
-use Storage\Service\Middlewares\ResponseMiddleware;
+use Storage\Service\Helpers\HttpCodeHelper;
 use Storage\Service\Models\Document;
 
 class Storage1Controller extends BaseController
 {
     public function getEntityAction(): array
     {
-        $filterCondition = [
-            'key1' => $this->getDI()->get('request')->get('key1'),
-            'key2' => $this->getDI()->get('request')->get('key2'),
-        ];
+        try {
+            /** @var Collection $collection */
+            $collection = $this->getDI()->get('mongodb')->storage;
 
-        $messages = $this->getDI()->get(Document::class, [$filterCondition])->validate($this->getDI());
-        if (0 !== $messages->count()) {
+            $filter = [
+                'key1' => htmlspecialchars($this->getDI()->get('request')->get('key1', null, '')),
+                'key2' => htmlspecialchars($this->getDI()->get('request')->get('key2', null, '')),
+            ];
+
             return [
-                'status' => ResponseMiddleware::STATUS_ERROR,
-                'messages' => $messages,
+                'status' => HttpCodeHelper::STATUS_SUCCESS,
+                'data' => $collection->find($filter)->toArray(),
+            ];
+        } catch (Exception $e) {
+            return [
+                'status' => HttpCodeHelper::STATUS_ERROR,
+                'messages' => $e->getMessage(),
             ];
         }
-
-        /** @var Collection $collection */
-        $collection = $this->getDI()->get('mongodb')->storage;
-
-        return [
-            'status' => ResponseMiddleware::STATUS_SUCCESS,
-            'data' => $collection->find($filterCondition)->toArray(),
-        ];
     }
 
     public function postEntityAction(): array
     {
-        $requestData = $this->getDI()->get('runtime-cache')->get('request-data');
-
         $currentDateTime = $this->getDI()->get(DateTimeHelper::class)->getUTCDateTimeByCurrent();
+        $data = $this->getDI()->get('runtime-cache')->get('request-data');
+
         $documents = [];
         $errors = [];
-        foreach ($requestData as $key => $data) {
-            $data['createAt'] = $currentDateTime->getTimestamp();
+        foreach ($data as $key => $item) {
+            $item['createAt'] = $currentDateTime->getTimestamp();
+            $document = $this->getDI()->get(Document::class, [$item]);
 
-            $document = $this->getDI()->get(Document::class, [$data]);
             $messages = $document->validate($this->getDI());
-            if (0 === $messages->count()) {
+            if (empty($messages->count())) {
                 $documents[] = $document;
-
-                continue;
+            } else {
+                $errors[$key] = $messages;
             }
-
-            $errors[$key] = $messages;
         }
 
         if (!empty($errors)) {
             return [
-                'status' => ResponseMiddleware::STATUS_ERROR,
+                'status' => HttpCodeHelper::STATUS_ERROR,
                 'messages' => $errors,
             ];
         }
 
-        /** @var Collection $collection */
-        $collection = $this->getDI()->get('mongodb')->storage;
+        try {
+            /** @var Collection $collection */
+            $collection = $this->getDI()->get('mongodb')->storage;
+            $result = $collection->insertMany($documents);
 
-        $result = $collection->insertMany($documents);
-
-        return [
-            'status' => ResponseMiddleware::STATUS_SUCCESS,
-            'data' => $collection->find(['_id' => ['$in' => $result->getInsertedIds()]])->toArray(),
-        ];
+            return [
+                'status' => HttpCodeHelper::STATUS_SUCCESS,
+                'data' => $collection->find(['_id' => ['$in' => $result->getInsertedIds()]])->toArray(),
+            ];
+        } catch (Exception $e) {
+            return [
+                'status' => HttpCodeHelper::STATUS_ERROR,
+                'messages' => $e->getMessage(),
+            ];
+        }
     }
 }

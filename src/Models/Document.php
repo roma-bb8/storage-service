@@ -10,8 +10,7 @@ use MongoDB\BSON\Serializable;
 use Phalcon\Di\DiInterface;
 use Phalcon\Messages\Messages;
 use Phalcon\Validation;
-use Phalcon\Validation\Validator\Callback;
-use Storage\Service\Factorys\Validators\DocumentValidatorFactory;
+use Storage\Service\Factorys\Validators\DocumentValidator;
 use Storage\Service\Helpers\DateTimeHelper;
 
 class Document implements Unserializable, Serializable
@@ -25,21 +24,14 @@ class Document implements Unserializable, Serializable
     {
         $validation = $di->get(Validation::class);
 
-        $validation->add('key1', $di->get(Callback::class, [[
-            'callback' => static fn ($data) => in_array(
-                $data['key1'],
-                DocumentValidatorFactory::TYPE_SUPPORTED,
-                true
-            ),
-            'message' => 'key1 value is not supported.',
-        ]]));
-
-        $validators = $di->get(DocumentValidatorFactory::class)->makeValidators($di, $this->key1);
-        foreach ($validators as $validator) {
-            $validation->add('key2', $validator);
+        $validators = $di->get(DocumentValidator::class)->makeValidators($di, $this->key1);
+        foreach ($validators as $property => $rules) {
+            foreach ($rules as $rule) {
+                $validation->add($property, $rule);
+            }
         }
 
-        return $validation->validate(get_object_vars($this));
+        return $validation->validate($this->bsonSerialize());
     }
 
     public function setAttributes(array $data = []): self
@@ -63,9 +55,6 @@ class Document implements Unserializable, Serializable
         $this->setAttributes($data);
     }
 
-    /**
-     * @return array
-     */
     public function bsonSerialize(): array
     {
         return [

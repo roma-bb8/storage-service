@@ -11,6 +11,6 @@ class HelpCommand extends BaseCommand
 
         $this->getTerminalManager()->br()->out('Commands:');
         $this->getTerminalManager()->out('help [ main ] (Will display this message)');
-        $this->getTerminalManager()->out('trash storage [-f] [days] (Remove entries from the collection)');
+        $this->getTerminalManager()->out('trash storage [--force|-f] [days] (Remove entries from the collection)');
     }
 }

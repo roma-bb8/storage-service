@@ -9,9 +9,6 @@ use Storage\Service\Helpers\ContentTypeHelper;
 
 class ResponseMiddleware implements MiddlewareInterface
 {
-    public const STATUS_SUCCESS = 'success';
-    public const STATUS_ERROR = 'error';
-
     public function call(Micro $application): bool
     {
         $application->getDI()->get('response')

@@ -8,7 +8,7 @@ use Phalcon\Events\Event;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
 use Storage\Service\Exceptions\ServiceRuntimeException;
-use Storage\Service\Helpers\HttpStatusCodeHelper;
+use Storage\Service\Helpers\HttpCodeHelper;
 use Storage\Service\Models\Security\AccessControlInterface;
 use Storage\Service\Models\Throttling\ThrottlingManagerInterface;
 
@@ -22,7 +22,7 @@ class RequestMiddleware implements MiddlewareInterface
         if (empty($apiId)) {
             throw new ServiceRuntimeException(
                 'Missing required header: X-Api-Id.',
-                HttpStatusCodeHelper::BAD_REQUEST
+                HttpCodeHelper::BAD_REQUEST
             );
         }
 
@@ -30,21 +30,21 @@ class RequestMiddleware implements MiddlewareInterface
         if (empty($apiKey)) {
             throw new ServiceRuntimeException(
                 'Missing required header: X-Api-Key.',
-                HttpStatusCodeHelper::BAD_REQUEST
+                HttpCodeHelper::BAD_REQUEST
             );
         }
 
         if (!$di->get(ThrottlingManagerInterface::class)->isGranted($di, $apiId, $apiKey)) {
             throw new ServiceRuntimeException(
                 'Service access limit exceeded.',
-                HttpStatusCodeHelper::FORBIDDEN
+                HttpCodeHelper::FORBIDDEN
             );
         }
 
         if (!$di->get(AccessControlInterface::class)->isGranted($di, $apiKey)) {
             throw new ServiceRuntimeException(
                 'Access denied.',
-                HttpStatusCodeHelper::FORBIDDEN
+                HttpCodeHelper::FORBIDDEN
             );
         }
 
@@ -69,7 +69,7 @@ class RequestMiddleware implements MiddlewareInterface
             $application->getDI()->get('runtime-cache')->set('request-data', $data);
 
         } catch (JsonException $exception) {
-            throw new ServiceRuntimeException('JSON decode error.', HttpStatusCodeHelper::BAD_REQUEST);
+            throw new ServiceRuntimeException('JSON decode error.', HttpCodeHelper::BAD_REQUEST);
         }
 
         return true;

@@ -7,6 +7,9 @@ class Storage2Controller extends Storage1Controller
     public function getEntityAction(): array
     {
         $documents = parent::getEntityAction();
+        if (empty($documents['data'])) {
+            return $documents;
+        }
 
         foreach ($documents['data'] as &$document) {
             $document['_id'] = (string) $document['_id'];

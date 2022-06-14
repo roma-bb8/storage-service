@@ -121,8 +121,8 @@ return [
         'className' => \Storage\Service\Models\Security\ConfigBasedAccessControl::class,
         'shared' => true,
     ],
-    \Storage\Service\Factorys\Validators\DocumentValidatorFactory::class => [
-        'className' => \Storage\Service\Factorys\Validators\DocumentValidatorFactory::class,
+    \Storage\Service\Factorys\Validators\DocumentValidator::class => [
+        'className' => \Storage\Service\Factorys\Validators\DocumentValidator::class,
         'shared' => true,
     ],
     \Storage\Service\Models\Document::class => [

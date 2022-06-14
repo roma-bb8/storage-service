@@ -5,6 +5,7 @@ namespace Storage\Service\Commands;
 
 use DateTime;
 use JsonException;
+use MongoDB\Collection;
 use Storage\Service\Helpers\DateTimeHelper;
 
 class TrashCommand extends BaseCommand
@@ -18,7 +19,9 @@ class TrashCommand extends BaseCommand
 
     private function deleteDocuments(int $timestamp): void
     {
-        $this->getDI()->get('mongodb')->storage->deleteMany(['createAt' => ['$lt' => $timestamp]]);
+        /** @var Collection $collection */
+        $collection = $this->getDI()->get('mongodb')->storage;
+        $collection->deleteMany(['createAt' => ['$lt' => $timestamp]]);
 
         $this->getTerminalManager()->green('Congratulations you cleared the old records.');
     }
@@ -27,7 +30,7 @@ class TrashCommand extends BaseCommand
 
     public function storageAction($mode = null, $days = null): void
     {
-        if ('-f' === $mode) {
+        if (in_array((string) $mode, ['-f', '--force'], true)) {
             if (0 >= (int) $days) {
                 $this->getTerminalManager()->red('Days must be specified as an integer greater than 0.');
 
@@ -48,17 +51,18 @@ class TrashCommand extends BaseCommand
         }
 
         $timestamp = $this->getDateTime($days)->getTimestamp();
-        $countDocuments = $this->getDI()->get('mongodb')->storage->countDocuments(
-            ['createAt' => ['$lt' => $timestamp]]
-        );
 
+        /** @var Collection $collection */
+        $collection = $this->getDI()->get('mongodb')->storage;
+
+        $countDocuments = $collection->countDocuments(['createAt' => ['$lt' => $timestamp]]);
         if (0 === $countDocuments) {
             $this->getTerminalManager()->yellow('No data for this period.');
 
             return;
         }
 
-        $contenderDocuments = $this->getDI()->get('mongodb')->storage->find(
+        $contenderDocuments = $collection->find(
             ['createAt' => ['$lt' => $timestamp]],
             ['sort' => ['timestamp' => 1], 'limit' => 5]
         );

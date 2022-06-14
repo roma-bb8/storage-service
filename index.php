@@ -12,7 +12,7 @@ try {
             \Storage\Service\Helpers\ContentTypeHelper::CHARSET
         )
         ->setJsonContent([
-            'status' => \Storage\Service\Middlewares\ResponseMiddleware::STATUS_ERROR,
+            'status' => \Storage\Service\Helpers\HttpCodeHelper::STATUS_ERROR,
             'message' => $throwable->getMessage(),
             'code' => $throwable->getCode(),
         ])

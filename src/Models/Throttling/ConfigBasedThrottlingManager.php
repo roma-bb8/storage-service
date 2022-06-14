@@ -5,7 +5,7 @@ namespace Storage\Service\Models\Throttling;
 
 use Phalcon\Di\DiInterface;
 use Storage\Service\Exceptions\ServiceRuntimeException;
-use Storage\Service\Helpers\HttpStatusCodeHelper;
+use Storage\Service\Helpers\HttpCodeHelper;
 
 final class ConfigBasedThrottlingManager implements ThrottlingManagerInterface
 {
@@ -16,7 +16,7 @@ final class ConfigBasedThrottlingManager implements ThrottlingManagerInterface
         if (!in_array($apiId, $di->get('config')->get('x-api-ids')->toArray(), true)) {
             throw new ServiceRuntimeException(
                 'Unidentified API Identification.',
-                HttpStatusCodeHelper::BAD_REQUEST
+                HttpCodeHelper::BAD_REQUEST
             );
         }
 

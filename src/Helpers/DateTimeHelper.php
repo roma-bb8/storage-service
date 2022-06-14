@@ -25,9 +25,7 @@ class DateTimeHelper
     public function getUTCDateTimeByTimestamp(int $timestamp): ?DateTime
     {
         try {
-            $dateTimeZone = new DateTimeZone(self::TIMEZONE_UTC);
-
-            return (new DateTime('now', $dateTimeZone))->setTimestamp($timestamp);
+            return (new DateTime('now', new DateTimeZone(self::TIMEZONE_UTC)))->setTimestamp($timestamp);
         } catch (Exception $e) {
             return null;
         }

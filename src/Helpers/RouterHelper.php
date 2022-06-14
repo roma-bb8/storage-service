@@ -28,7 +28,7 @@ class RouterHelper
                 ContentTypeHelper::CHARSET
             )
             ->setJsonContent([
-                'status' => ResponseMiddleware::STATUS_ERROR,
+                'status' => HttpCodeHelper::STATUS_ERROR,
                 'message' => 'Not Found...',
                 'code' => 0,
             ])
@@ -44,7 +44,7 @@ class RouterHelper
                 ContentTypeHelper::CHARSET
             )
             ->setJsonContent([
-                'status' => ResponseMiddleware::STATUS_ERROR,
+                'status' => HttpCodeHelper::STATUS_ERROR,
                 'message' => $throwable->getMessage(),
                 'code' => $throwable->getCode(),
             ])
@@ -58,7 +58,7 @@ class RouterHelper
         if (empty($layer)) {
             throw new ServiceRuntimeException(
                 'Missing required header: X-API-Layer.',
-                HttpStatusCodeHelper::BAD_REQUEST
+                HttpCodeHelper::BAD_REQUEST
             );
         }
 
@@ -82,12 +82,12 @@ class RouterHelper
 
         $path = explode(self::URL_SEPARATOR_PARAMS, $uri->getPath());
         if (empty($path[0])) {
-            throw new ServiceRuntimeException('Wrong url address.', HttpStatusCodeHelper::BAD_REQUEST);
+            throw new ServiceRuntimeException('Wrong url address.', HttpCodeHelper::BAD_REQUEST);
         }
 
         $paths = array_filter(explode(self::URL_SEPARATOR, substr($path[0], strlen($prefix))));
         if (empty($paths[0])) {
-            throw new ServiceRuntimeException('Wrong url address.', HttpStatusCodeHelper::BAD_REQUEST);
+            throw new ServiceRuntimeException('Wrong url address.', HttpCodeHelper::BAD_REQUEST);
         }
 
         $controller = $paths[0];
