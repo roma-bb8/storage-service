@@ -15,11 +15,12 @@ return [
         'arguments' => [
             [
                 'type' => 'parameter',
-                'value' => sprintf('mongodb://%s:%s@%s:%d',
+                'value' => sprintf('mongodb://%s:%s@%s:%d/%s',
                     \Storage\Service\MicroService::getConfig('mongodb.user'),
                     \Storage\Service\MicroService::getConfig('mongodb.password'),
                     \Storage\Service\MicroService::getConfig('mongodb.host'),
                     \Storage\Service\MicroService::getConfig('mongodb.port'),
+                    \Storage\Service\MicroService::getConfig('mongodb.dbname'),
                 ),
             ],
         ],

@@ -59,10 +59,10 @@ return [
         ],
     ],
     'mongodb' => [
-        'user' => 'root',
-        'password' => 'toor',
+        'user' => getenv('MONGO_USERNAME', true),
+        'password' => getenv('MONGO_PASSWORD', true),
         'host' => 'mongodb',
         'port' => 27017,
-        'dbname' => 'storage',
+        'dbname' => getenv('MONGO_DATABASE', true),
     ],
 ];
