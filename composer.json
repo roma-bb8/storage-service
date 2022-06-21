@@ -1,0 +1,38 @@
+{
+    "name": "roma-bb8/storage-service",
+    "description": "PHP Storage service",
+    "type": "project",
+    "homepage": "https://github.com/roma-bb8/storage-service/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roma Baranenko",
+            "email": "jungle.romabb8@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/roma-bb8/storage-service/issues/"
+    },
+    "require": {
+        "php": ">=7.4",
+        "ext-psr": "*",
+        "ext-phalcon": "*",
+        "ext-mongodb": "*",
+        "ext-memcached": "*",
+        "ext-json": "*",
+        "mongodb/mongodb": "^1.12",
+        "league/climate": "^3.8"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
+    },
+    "bin": [
+        "bin/cli"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Storage\\Service\\": "src/"
+        }
+    }
+}

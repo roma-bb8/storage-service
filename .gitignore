@@ -1,0 +1,8 @@
+.git/
+/etc/*-local.php
+mnt/*
+!mnt/mongodb/.gitkeep
+/composer.lock
+vendor/
+var/*
+!var/.gitkeep
