@@ -27,8 +27,8 @@ class TrashCommand extends BaseCommand
 
     public function storageAction($mode = null, $days = null): void
     {
-        if ($mode === '-f') {
-            if (!is_int($days) && 0 >= $days) {
+        if ('-f' === $mode) {
+            if (0 >= (int) $days) {
                 $this->getTerminalManager()->red('Days must be specified as an integer greater than 0.');
 
                 return;
