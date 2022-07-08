@@ -11,17 +11,17 @@ services:
             - ENDPOINT=${ENDPOINT}
             - PORT=${PORT}
         volumes:
-            - ./etc/nginx:/etc/nginx/templates
-            - ./var/log/nginx:/var/log/nginx
-            - ./:/var/www/html
+            - ./../nginx/:/etc/nginx/templates/
+            - ./../../var/log/nginx/:/var/log/nginx/
+            - ./../../:/var/www/html/
         ports:
             - '${PORT}:${PORT}'
         links:
             - php
     php:
         build:
-            dockerfile: php-fpm-phalcon.dockerfile
-            context: ./etc/docker/
+            dockerfile: ../docker/php-fpm-phalcon.dockerfile
+            context: ../docker/
             args:
                 - PHP_VERSION=${PHP_VERSION}
                 - PSR_VERSION=${PSR_VERSION}
@@ -30,13 +30,14 @@ services:
         container_name: php
         restart: always
         environment:
-            PHP_IDE_CONFIG: serverName=${HOSTNAME}
-        working_dir: /var/www/html
+            - MONGO_USERNAME=${MONGO_USERNAME}
+            - MONGO_PASSWORD=${MONGO_PASSWORD}
+            - MONGO_DATABASE=${MONGO_DATABASE}
+        working_dir: /var/www/html/
         volumes:
-            - ./etc/php:/usr/local/etc/php/conf.d
-            - ./:/var/www/html
-        extra_hosts:
-            - host.docker.internal:host-gateway
+            - ./../php/php.ini:/usr/local/etc/php/conf.d/php.ini
+            - ./../../:/var/www/html/
+            - ./../../var/log/php/:/var/log/php/
         links:
             - mongodb
             - memcached
@@ -45,12 +46,14 @@ services:
         container_name: mongodb
         restart: always
         environment:
-            - MONGO_INITDB_ROOT_USERNAME=root
-            - MONGO_INITDB_ROOT_PASSWORD=toor
-            - MONGO_INITDB_DATABASE=storage
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+            - MONGO_USERNAME=${MONGO_USERNAME}
+            - MONGO_PASSWORD=${MONGO_PASSWORD}
+            - MONGO_DATABASE=${MONGO_DATABASE}
         volumes:
-            - ./etc/mongodb:/docker-entrypoint-initdb.d
-            - ./mnt/mongodb:/data/db
+            - ./../mongodb/:/docker-entrypoint-initdb.d/
+            - ./../../mnt/mongodb/:/data/db/
         ports:
             - '${MONGODB_PORT}:27017'
     memcached:

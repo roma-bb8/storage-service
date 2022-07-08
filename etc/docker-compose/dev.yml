@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+    php:
+        build:
+            target: development
+        environment:
+            PHP_IDE_CONFIG: serverName=${HOSTNAME}
+        volumes:
+            - ./../php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+        extra_hosts:
+            - host.docker.internal:host-gateway
