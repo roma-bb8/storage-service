@@ -22,8 +22,21 @@ return [
         'shared' => true,
     ],
     'runtime-cache' => [
-        'className' => \Storage\Service\Adapters\RuntimeCacheAdapter::class,
+        'className' => \Phalcon\Cache\Adapter\Memory::class,
         'shared' => true,
+        'arguments' => [
+            [
+                'type' => 'service',
+                'name' => \Phalcon\Storage\SerializerFactory::class,
+            ],
+            [
+                'type' => 'parameter',
+                'value' => [
+                    'defaultSerializer' => 'Php',
+                    'lifetime' => \Storage\Service\MicroService::getConfig('runtime-cache.lifetime'),
+                ],
+            ],
+        ],
     ],
     'memcached' => [
         'className' => \Phalcon\Cache\Adapter\Libmemcached::class,

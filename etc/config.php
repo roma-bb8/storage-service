@@ -21,6 +21,9 @@ return [
     'x-api-keys' => [
         'fc3ff98e8c6a0d3087d515c0473f8677',
     ],
+    'runtime-cache' => [
+        'lifetime' => 3600,
+    ],
     'memcached' => [
         'lifetime' => 3600,
         'servers' => [
